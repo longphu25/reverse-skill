@@ -118,15 +118,16 @@
 3. 首次使用 → 将规则写入当前客户端的全局配置（见"全局注入"章节）
 4. 如果 tool-index 路径与当前机器不符 → 先执行 refresh-tool-index.ps1
 5. 读取 SKILL.md → routing.md → 确定进入哪个子 skill
-6. 如果路由未命中 → 提议新增 skill（按 CONTRIBUTING.md 流程）
+6. 如果路由未命中 → 联网搜索该领域方法论 → 提议新增 skill
 7. 检查 field-journal/_index.md → 是否有同类经验可复用
 8. 读取 tool-index.md → 确认本机工具状态
 9. 如果缺工具 → 调用 bootstrap-reverse.ps1 自动补齐
 10. 如果自动补齐失败 → 输出结构化引导（含手动步骤），等用户确认后继续
 11. 进入对应 skill 的工作流 → 执行任务
-12. 执行过程中持续向用户汇报进展（不要沉默太久）
-13. 任务完成 → 执行"完成 Checklist"（见下方）
-14. 输出最终结果
+12. 执行过程中遇到困难 → 联网搜索解决方案 → 沉淀到 references/
+13. 执行过程中持续向用户汇报进展（不要沉默太久）
+14. 任务完成 → 执行"完成 Checklist"（见下方）
+15. 输出最终结果
 ```
 
 ---
@@ -150,12 +151,18 @@
      - 必须包含：踩坑记录、可复用模式、工具链发现、环境信息
      - 脱敏检查：无真实域名/IP/Token/用户名
 
-□ 4. 询问社区贡献
+□ 4. 沉淀搜索到的知识（如果本次任务中联网搜索过）
+     - 将搜索到的有价值内容写入对应 skill 的 references/
+     - 标注来源 URL 和日期
+     - 如果发现了新工具 → 更新 bootstrap-manifest
+     - 如果发现了新场景 → 更新 routing.md + RULES.md 关键词
+
+□ 5. 询问社区贡献
      - "是否将本次经验贡献到社区主仓库？数据已脱敏，只提交 field-journal 文件。"
      - 用户同意 → 按 CONTRIBUTE-BACK.md 流程创建 PR
      - 用户拒绝 → 跳过
 
-□ 5. 更新系统索引
+□ 6. 更新系统索引
      - 更新 field-journal/_index.md（新增条目）
      - 检查是否需要更新：routing.md / bootstrap-manifest / tool-index
      - 如果发现新工具或新场景 → 执行对应更新
@@ -221,6 +228,71 @@
 - ❌ 不要反复重试已失败 2 次的自动安装
 - ❌ 不要沉默 — 遇到问题必须立即告知用户
 - ❌ 不要自己编造工具版本号或功能描述
+
+---
+
+## 联网知识补充（有搜索能力时必须使用）
+
+当 AI 具备联网搜索能力（如 web_search、remote_web_search、Perplexity、Tavily 等）时，**必须在以下场景主动搜索**：
+
+### 触发搜索的场景
+
+| 场景 | 搜索什么 | 搜索后做什么 |
+|------|---------|-------------|
+| 遇到未知壳/保护/混淆 | 搜索该壳的脱壳方法和工具 | 将方法写入对应 skill 的 references/ |
+| 遇到未知框架/协议 | 搜索逆向/渗透该框架的方法 | 写入 references/ 或提议新增 skill |
+| 工具报错/不兼容 | 搜索错误信息 + 版本兼容性 | 写入 field-journal 踩坑记录 |
+| 发现新 CVE/漏洞 | 搜索 PoC 和利用方法 | 写入 pentest-tools/references/ |
+| 路由未命中（全新场景） | 搜索该领域的方法论和工具 | 提议新增 skill 并附上搜索到的资料 |
+| 需要特定 Frida 脚本 | 搜索 GitHub/CodeShare 上的现成脚本 | 写入 apk-reverse/references/ 或直接使用 |
+| 需要特定 payload | 搜索 PayloadsAllTheThings/HackTricks | 写入 pentest-tools/payloads/ |
+| 工具版本过旧 | 搜索最新版本和 breaking changes | 更新 bootstrap-manifest 和文档 |
+
+### 搜索后的知识沉淀流程
+
+```text
+1. 搜索获取信息
+2. 验证信息可靠性（优先官方文档 > GitHub > 博客 > 论坛）
+3. 提取可操作的内容（命令/脚本/配置/步骤）
+4. 写入本包对应位置：
+   - 通用方法论 → 对应 skill 的 references/*.md
+   - 特定工具用法 → 对应 skill 的 references/ 或 SKILL.md
+   - 踩坑经验 → field-journal/
+   - 新工具发现 → bootstrap-manifest.json + ToolDiscovery.ps1
+   - 新场景发现 → routing.md + RULES.md 关键词
+5. 标注来源（URL + 日期），便于后续验证时效性
+6. 如果信息量足够大（新领域），提议新增独立 skill
+```
+
+### 知识沉淀的文件格式
+
+搜索到的内容写入 references/ 时，使用以下格式：
+
+```markdown
+# [主题名称]
+
+> 来源：[URL]（[日期]）
+> 适用场景：[什么时候用]
+
+## [内容]
+...
+```
+
+### 自动注册进路由
+
+当搜索发现了一个全新的技术领域（现有 routing.md 完全没覆盖），AI 应该：
+
+1. 在 routing.md 的"按用户意图"表中添加对应行
+2. 在 RULES.md 的触发关键词中添加相关词
+3. 如果内容足够独立，按 CONTRIBUTING.md 流程新增 skill 目录
+4. 更新 skills/SKILL.md 的模块表
+
+### 搜索质量要求
+
+- **不要搜索后只给用户一个链接** — 必须提取关键内容写入本包
+- **不要盲信搜索结果** — 对照官方文档验证，标注置信度
+- **优先中文资源**（如果用户用中文交流）— 但技术细节以英文官方文档为准
+- **标注时效性** — 安全领域变化快，标注搜索日期，过期内容标记 `[可能过时]`
 
 ---
 
