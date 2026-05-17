@@ -20,6 +20,9 @@
 
 ### 渗透测试
 - [种子] Web API 未授权访问+IDOR — 关键词: REST API, IDOR, 越权, Swagger暴露, FFUF
+- [种子] AD CS ESC1 证书模板滥用 → 域管 — 关键词: certipy, AD CS, ESC1, 证书, DCSync, Kerberos
+- [种子] SSRF → 云元数据 → AK/SK → OSS 数据 — 关键词: SSRF, 云元数据, 169.254.169.254, AK/SK, IMDSv2
+- [种子] NTLM Relay + Coercer → 域管（无密码） — 关键词: NTLM Relay, Coercer, ntlmrelayx, 约束委派, S4U, PetitPotam
 - [2026-05-16] personalblog.fun Mass Assignment 提权 — 关键词: Spring Boot, MyBatis-Plus, SaToken, Mass Assignment, Swagger泄露, 权限提升, Vue SPA, temp mail, JS静态分析, 前端路由绕过, DTO缺失, 限速绕过
 
 ### CTF
@@ -51,7 +54,7 @@
 
 ## 累计统计
 
-- 总项目数: 7（含 4 个种子 + 3 个真实项目）
-- 新增模式数: 11
+- 总项目数: 10（含 7 个种子 + 3 个真实项目）
+- 新增模式数: 14
 - 工具链修复数: 0
-- 最近更新: 2026-05-16
+- 最近更新: 2026-05-17
